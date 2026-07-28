@@ -2,8 +2,9 @@
 
 import { Check, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { mutate } from "swr";
+import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import { toast } from "@/components/toast";
 import {
 	AlertDialog,
@@ -44,7 +45,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
 import { cn } from "@/lib/utils";
-import { createWorkspace, leaveWorkspace } from "../action";
+import { createWorkspace, deleteWorkspace, leaveWorkspace } from "../action";
 
 export const WorkspaceCreateButton = () => {
 	const user = useAuth();
@@ -217,6 +218,60 @@ export const WorkspaceLeaveButton = () => {
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
 					<AlertDialogAction onClick={handleClick}>
 						Leave Workspace
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	);
+};
+
+export const WorkspaceDeleteButton = () => {
+	const user = useAuth();
+	const [open, setOpen] = useState(false);
+	const [isLoading, startTransition] = useTransition();
+	const { selectedWorkspace, setSelectedWorkspaceId } = useWorkspace();
+	if (!selectedWorkspace) return null;
+	const handleClick = () => {
+		startTransition(async () => {
+			try {
+				setOpen(false);
+				setSelectedWorkspaceId(null);
+				const { success, message } = await deleteWorkspace(selectedWorkspace);
+				if (!success) throw new Error(message);
+				toast.success(message);
+				mutate(`/api/workspace/${user.user_id}`);
+			} catch (error) {
+				toast.error(error.message);
+			}
+		});
+	};
+
+	return (
+		<AlertDialog open={open} onOpenChange={setOpen}>
+			<AlertDialogTrigger
+				render={
+					<Button className="bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800/20 dark:text-red-400 dark:hover:bg-red-800/30 ring ring-red-600/50 dark:ring-red-500/50">
+						Delete Workspace
+					</Button>
+				}
+			/>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+					<AlertDialogDescription>
+						This action cannot be undone. This will permanently delete your
+						workspace, all tasks and members will be quited.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction
+						variant={"destructive"}
+						onClick={handleClick}
+						disabled={isLoading}
+						className={cn(isLoading && "shimmer shimmer-bg")}
+					>
+						Delete
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

@@ -4,10 +4,16 @@ import { Check, Ellipsis, X, Zap } from "lucide-react";
 import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
-import { WorkspaceInviteButton, WorkspaceLeaveButton } from "./WorkspaceButton";
+import {
+	WorkspaceDeleteButton,
+	WorkspaceInviteButton,
+	WorkspaceLeaveButton,
+} from "./WorkspaceButton";
 
 export const WorkspacePanel = () => {
+	const user = useAuth();
 	const { selectedWorkspace } = useWorkspace();
 	const items = useMemo(
 		() =>
@@ -99,7 +105,11 @@ export const WorkspacePanel = () => {
 								<Separator orientation="vertical" />
 								<div className="flex h-full gap-3 items-center">
 									<WorkspaceInviteButton />
-									<WorkspaceLeaveButton />
+									{selectedWorkspace.workspace.user_id === user.user_id ? (
+										<WorkspaceDeleteButton />
+									) : (
+										<WorkspaceLeaveButton />
+									)}
 								</div>
 							</div>
 						</CardContent>

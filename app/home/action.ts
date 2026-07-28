@@ -43,6 +43,27 @@ export const createWorkspace = async (
 	}
 };
 
+export const deleteWorkspace = async (
+	payload: Workspace,
+): Promise<FormResponse> => {
+	try {
+		const { error } = await supabase
+			.from("workspace")
+			.delete()
+			.eq("workspace_id", payload.workspace_id);
+		if (error) throw error;
+		return {
+			success: true,
+			message: `Deleted workspace - ${payload.workspace.name}`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
+
 export const joinWorkspace = async (
 	payload: TablesInsert<"workspace_member">,
 ): Promise<FormResponse> => {
@@ -98,7 +119,7 @@ export const leaveWorkspace = async (
 
 export const createTask = async (payload: {
 	task: TablesInsert<"task">;
-	task_assign: Omit<TablesInsert<"task_assign">, "task_id">[];
+	task_assign: Prettify<Omit<TablesInsert<"task_assign">, "task_id">>[];
 }): Promise<FormResponse<Tables<"task">>> => {
 	try {
 		const { data: tasks, error: taskError } = await supabase
@@ -149,6 +170,60 @@ export const changeTaskStatus = async (payload: {
 		return {
 			success: true,
 			message: `Changed Task - ${payload.task.name} status to ${payload.status}`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
+
+export const deleteTask = async (
+	payload: Workspace["workspace"]["task"][number],
+): Promise<FormResponse> => {
+	try {
+		const { error } = await supabase
+			.from("task")
+			.delete()
+			.eq("task_id", payload.task_id);
+		if (error) throw error;
+		return {
+			success: true,
+			message: `Deleted task - ${payload.name}`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
+
+export const editTask = async (payload: {
+	task: Prettify<
+		TablesUpdate<"task"> & Required<Pick<TablesUpdate<"task">, "task_id">>
+	>;
+	task_assign: TablesInsert<"task_assign">[];
+}): Promise<FormResponse> => {
+	try {
+		const { error: taskError } = await supabase
+			.from("task")
+			.update(payload.task)
+			.eq("task_id", payload.task.task_id);
+		if (taskError) throw taskError;
+		const { error: taskAssignDeleteError } = await supabase
+			.from("task_assign")
+			.delete()
+			.eq("task_id", payload.task.task_id);
+		if (taskAssignDeleteError) throw taskError;
+		const { error: taskAssignInsertError } = await supabase
+			.from("task_assign")
+			.insert(payload.task_assign);
+		if (taskAssignInsertError) throw taskError;
+		return {
+			success: true,
+			message: `Edited task successfully`,
 		};
 	} catch (error) {
 		return {
