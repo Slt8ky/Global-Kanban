@@ -11,7 +11,7 @@ import { Navigator } from "./_components/Navigator";
 import { SearchParamHandler } from "./_components/SearchParamHandler";
 import { WorkspaceInterface } from "./_components/WorkspaceInterface";
 import { WorkspacePanel } from "./_components/WorkspacePanel";
-import { WorkspaceTask } from "./_components/WorkspaceTask";
+import { WorkspaceTasks } from "./_components/WorkspaceTasks";
 
 const Page = () => {
 	return (
@@ -31,7 +31,7 @@ const Page = () => {
 						>
 							<WorkspaceInterface>
 								<WorkspacePanel />
-								<WorkspaceTask />
+								<WorkspaceTasks />
 							</WorkspaceInterface>
 						</CardContent>
 						<CardFooter className="justify-center">

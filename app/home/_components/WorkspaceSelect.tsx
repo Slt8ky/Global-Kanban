@@ -1,8 +1,7 @@
 "use client";
 
-import { Crown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { Workspace } from "@/app/api/workspace/[id]/route";
+import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import {
 	Combobox,
 	ComboboxContent,
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils";
 export const WorkspaceSelect = () => {
 	const router = useRouter();
 	const user = useAuth();
-	const { workspaces, selectedWorkspace, setSelectedWorkspace, isLoading } =
+	const { workspaces, selectedWorkspace, setSelectedWorkspaceId, isLoading } =
 		useWorkspace();
 
 	if (!workspaces) return null;
@@ -30,8 +29,8 @@ export const WorkspaceSelect = () => {
 			value={selectedWorkspace}
 			onValueChange={(item) => {
 				if (item) {
-					setSelectedWorkspace(item);
-					router.push(`/home?workspace_id=${item.workspace.workspace_id}`);
+					setSelectedWorkspaceId(item.workspace_id);
+					router.push(`/home?workspace_id=${item.workspace_id}`);
 				}
 			}}
 		>
@@ -44,7 +43,7 @@ export const WorkspaceSelect = () => {
 				<ComboboxEmpty>No workspaces found.</ComboboxEmpty>
 				<ComboboxList>
 					{(item: Workspace) => (
-						<ComboboxItem key={item.workspace.workspace_id} value={item}>
+						<ComboboxItem key={item.workspace_id} value={item}>
 							<div className="flex gap-2 items-center">
 								<div>{item.workspace.name}</div>
 								{item.workspace.user_id === user.user_id && (

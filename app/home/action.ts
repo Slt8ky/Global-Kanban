@@ -1,9 +1,10 @@
 "use server";
 
-import type { TablesInsert } from "@/database.types";
+import type { Prettify } from "@supabase/supabase-js";
+import type { Tables, TablesInsert, TablesUpdate } from "@/database.types";
 import type { FormResponse } from "@/lib/types";
 import { supabase } from "@/utils/supabase/admin";
-import type { Workspace } from "../api/workspace/[id]/route";
+import type { Workspace } from "../api/workspace/[user_id]/route";
 
 export const createWorkspace = async (
 	payload: TablesInsert<"workspace">,
@@ -40,10 +41,6 @@ export const createWorkspace = async (
 			message: error.message,
 		};
 	}
-};
-
-export const createTask = async (payload: TablesInsert<"task">) => {
-	await supabase.from("task").insert(payload);
 };
 
 export const joinWorkspace = async (
@@ -90,6 +87,68 @@ export const leaveWorkspace = async (
 		return {
 			success: true,
 			message: "Quited a workspace successfully.",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
+
+export const createTask = async (payload: {
+	task: TablesInsert<"task">;
+	task_assign: Omit<TablesInsert<"task_assign">, "task_id">[];
+}): Promise<FormResponse<Tables<"task">>> => {
+	try {
+		const { data: tasks, error: taskError } = await supabase
+			.from("task")
+			.insert(payload.task)
+			.select();
+		if (taskError) throw taskError;
+		const [task] = tasks;
+		if (payload.task_assign.length) {
+			const { error: taskAssignError } = await supabase
+				.from("task_assign")
+				.insert(
+					payload.task_assign.map((item) => ({
+						task_id: task.task_id,
+						user_id: item.user_id,
+					})),
+				);
+			if (taskAssignError) throw taskAssignError;
+		}
+		return {
+			success: true,
+			message: `Added task - ${task.name}`,
+			data: task,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
+
+export const changeTaskStatus = async (payload: {
+	task: Prettify<
+		TablesUpdate<"task"> &
+			Required<Pick<TablesUpdate<"task">, "task_status_id" | "task_id">>
+	>;
+	status: string;
+}): Promise<FormResponse> => {
+	try {
+		const { error } = await supabase
+			.from("task")
+			.update({
+				task_status_id: payload.status,
+			})
+			.eq("task_id", payload.task.task_id);
+		if (error) throw error;
+		return {
+			success: true,
+			message: `Changed Task - ${payload.task.name} status to ${payload.status}`,
 		};
 	} catch (error) {
 		return {

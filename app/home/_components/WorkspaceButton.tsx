@@ -2,7 +2,7 @@
 
 import { Check, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { mutate } from "swr";
 import { toast } from "@/components/toast";
 import {
@@ -21,6 +21,7 @@ import {
 	Dialog,
 	DialogClose,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -29,17 +30,84 @@ import {
 import {
 	Field,
 	FieldDescription,
+	FieldError,
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
-import { leaveWorkspace } from "../action";
+import { cn } from "@/lib/utils";
+import { createWorkspace, leaveWorkspace } from "../action";
+
+export const WorkspaceCreateButton = () => {
+	const user = useAuth();
+	const [open, setOpen] = useState(false);
+	const router = useRouter();
+	const [error, dispatch, isPending] = useActionState(
+		async (_: string | undefined, formData: FormData) => {
+			try {
+				const name = formData.get("name")?.toString().trim();
+				if (!name) throw new Error("Please provide a workspace name!");
+				const {
+					message,
+					success,
+					data: workspace_id,
+				} = await createWorkspace({
+					name,
+					user_id: user.user_id,
+				});
+				if (!success) throw new Error(message);
+				mutate(`/api/workspace/${user.user_id}`);
+				router.push(`/home?workspace_id=${workspace_id}`);
+				toast.success(message);
+				setOpen(false);
+			} catch (error) {
+				return error.message as string;
+			}
+		},
+		undefined,
+	);
+
+	return (
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger render={<Button>Create Workspace</Button>} />
+			<DialogContent className="sm:max-w-sm">
+				<form action={dispatch} className="flex gap-5 flex-col">
+					<DialogHeader>
+						<DialogTitle>Create workspace</DialogTitle>
+						<DialogDescription>
+							Create workspace to manage task.
+						</DialogDescription>
+					</DialogHeader>
+					<FieldGroup>
+						<FieldError>{error}</FieldError>
+						<Field>
+							<Label htmlFor="name">Workspace Name</Label>
+							<Input id="name" name="name" />
+						</Field>
+					</FieldGroup>
+					<DialogFooter>
+						<DialogClose render={<Button variant="outline">Cancel</Button>} />
+						<Button
+							type="submit"
+							disabled={isPending}
+							className={cn(isPending && "shimmer shimmer-bg")}
+						>
+							Create Workspace
+						</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+};
 
 export const WorkspaceInviteButton = () => {
 	const { selectedWorkspace } = useWorkspace();
@@ -105,12 +173,11 @@ export const WorkspaceInviteButton = () => {
 export const WorkspaceLeaveButton = () => {
 	const user = useAuth();
 	const router = useRouter();
-	const { selectedWorkspace, setSelectedWorkspace } = useWorkspace();
+	const { selectedWorkspace, setSelectedWorkspaceId } = useWorkspace();
 	const [open, setOpen] = useState(false);
 	if (!selectedWorkspace) return;
 	const handleClick = async () => {
 		setOpen(false);
-
 		try {
 			const res = await leaveWorkspace({
 				user_id: user.user_id,
@@ -119,18 +186,11 @@ export const WorkspaceLeaveButton = () => {
 
 			if (!res.success) {
 				toast.error(res.message);
-				return; // Stop here if leaving failed
+				return;
 			}
-
 			toast.success(res.message);
-
-			// 1. Navigate immediately
 			router.replace("/home");
-
-			// 2. Clear selected workspace
-			setSelectedWorkspace(null);
-
-			// 3. Trigger cache refresh in the background (no await needed)
+			setSelectedWorkspaceId(null);
 			mutate(`/api/workspace/${user.user_id}`);
 		} catch {
 			toast.error("An unexpected error occurred.");

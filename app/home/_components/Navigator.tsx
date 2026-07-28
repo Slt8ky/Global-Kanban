@@ -1,5 +1,5 @@
 import { UserInfo } from "./UserInfo";
-import { WorkspaceCreate } from "./WorkspaceCreate";
+import { WorkspaceCreateButton } from "./WorkspaceButton";
 import { WorkspaceSelect } from "./WorkspaceSelect";
 
 export const Navigator = () => {
@@ -8,7 +8,7 @@ export const Navigator = () => {
 			<div className="flex gap-3 items-center">
 				<div>Global Kanban</div>
 				<WorkspaceSelect />
-				<WorkspaceCreate />
+				<WorkspaceCreateButton />
 			</div>
 			<UserInfo />
 		</div>

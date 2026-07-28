@@ -14,12 +14,10 @@ export const SearchParamHandler = () => {
 	const invite_id = search.get("invite_id");
 	const workspace_id = search.get("workspace_id");
 	const router = useRouter();
-	const { workspaces, setSelectedWorkspace, isLoading } = useWorkspace();
+	const { workspaces, setSelectedWorkspaceId, isLoading } = useWorkspace();
 	const workspace = useMemo(() => {
 		if (workspace_id) {
-			return workspaces.find(
-				(workspace) => workspace.workspace_id === workspace_id,
-			);
+			return workspaces.find((item) => item.workspace_id === workspace_id);
 		}
 	}, [workspace_id, workspaces]);
 
@@ -28,14 +26,14 @@ export const SearchParamHandler = () => {
 			if (!workspace_id || !workspace || isLoading) return;
 			if (!workspaces.length || !workspace)
 				throw new Error("Invalid workspace");
-			setSelectedWorkspace(workspace);
+			setSelectedWorkspaceId(workspace.workspace_id);
 		} catch (error) {
 			toast.error(error.message);
 			redirect("/home");
 		}
 	}, [
 		isLoading,
-		setSelectedWorkspace,
+		setSelectedWorkspaceId,
 		workspace,
 		workspace_id,
 		workspaces.length,

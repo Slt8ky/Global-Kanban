@@ -21,7 +21,9 @@ export const WorkspacePanel = () => {
 								/>
 							),
 							name: "Todo",
-							value: 0,
+							value: selectedWorkspace.workspace.task.filter(
+								(item) => item.task_status_id === "to_do",
+							).length,
 						},
 						{
 							icon: (
@@ -31,7 +33,9 @@ export const WorkspacePanel = () => {
 								/>
 							),
 							name: "In Progress",
-							value: 0,
+							value: selectedWorkspace.workspace.task.filter(
+								(item) => item.task_status_id === "in_progress",
+							).length,
 						},
 						{
 							icon: (
@@ -41,7 +45,9 @@ export const WorkspacePanel = () => {
 								/>
 							),
 							name: "Done",
-							value: 0,
+							value: selectedWorkspace.workspace.task.filter(
+								(item) => item.task_status_id === "done",
+							).length,
 						},
 					]
 				: [],

@@ -10,13 +10,13 @@ import {
 	useState,
 } from "react";
 import useSWR from "swr";
-import type { Workspace } from "@/app/api/workspace/[id]/route";
+import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import { useAuth } from "./AuthProvider";
 
 const WorkspaceContext = createContext<{
 	workspaces: Workspace[];
 	selectedWorkspace: Workspace | null;
-	setSelectedWorkspace: Dispatch<SetStateAction<Workspace | null>>;
+	setSelectedWorkspaceId: Dispatch<SetStateAction<string | null>>;
 	isLoading: boolean;
 } | null>(null);
 
@@ -32,14 +32,21 @@ export const WorkspaceProvider = ({ children }: { children?: ReactNode }) => {
 		`/api/workspace/${user.user_id}`,
 		(url: string) => fetch(url).then((res) => res.json()),
 	);
-	const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(
+	const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
 		null,
+	);
+	const selectedWorkspace = useMemo(
+		() =>
+			workspaces.find(
+				(w) => w.workspace.workspace_id === selectedWorkspaceId,
+			) ?? null,
+		[selectedWorkspaceId, workspaces],
 	);
 	const value = useMemo(
 		() => ({
 			workspaces,
 			selectedWorkspace,
-			setSelectedWorkspace,
+			setSelectedWorkspaceId,
 			isLoading,
 		}),
 		[isLoading, selectedWorkspace, workspaces],
