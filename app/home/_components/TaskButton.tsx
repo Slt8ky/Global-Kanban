@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheckBig, CircleDashed, Plus } from "lucide-react";
+import { CircleCheckBig, CircleDashed, Plus, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { mutate } from "swr";
 import type { Workspace } from "@/app/api/workspace/[user_id]/route";
@@ -164,7 +164,7 @@ export const TaskChangeStatusButton = ({
 	task,
 	onChangeStatus,
 }: {
-	status: "in_progress" | "done";
+	status: "to_do" | "in_progress" | "done";
 	task: Workspace["workspace"]["task"][number];
 	onChangeStatus: (
 		task: Workspace["workspace"]["task"][number],
@@ -172,6 +172,10 @@ export const TaskChangeStatusButton = ({
 	) => void;
 }) => {
 	const varient = {
+		to_do: {
+			className: "bg-red-600/20 hover:bg-red-600/10 text-red-500",
+			icon: <X />,
+		},
 		in_progress: {
 			className: "bg-amber-600/20 hover:bg-amber-600/10 text-amber-500",
 			icon: <CircleDashed />,

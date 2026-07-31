@@ -36,7 +36,7 @@ export const SearchParamHandler = () => {
 		setSelectedWorkspaceId,
 		workspace,
 		workspace_id,
-		workspaces.length,
+		workspaces,
 	]);
 
 	useEffect(() => {

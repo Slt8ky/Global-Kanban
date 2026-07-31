@@ -35,13 +35,13 @@ export const WorkspaceProvider = ({ children }: { children?: ReactNode }) => {
 	const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
 		null,
 	);
-	const selectedWorkspace = useMemo(
-		() =>
+	const selectedWorkspace = useMemo(() => {
+		return (
 			workspaces.find(
 				(w) => w.workspace.workspace_id === selectedWorkspaceId,
-			) ?? null,
-		[selectedWorkspaceId, workspaces],
-	);
+			) ?? null
+		);
+	}, [selectedWorkspaceId, workspaces]);
 	const value = useMemo(
 		() => ({
 			workspaces,

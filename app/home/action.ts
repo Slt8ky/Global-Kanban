@@ -154,22 +154,23 @@ export const createTask = async (payload: {
 
 export const changeTaskStatus = async (payload: {
 	task: Prettify<
-		TablesUpdate<"task"> &
-			Required<Pick<TablesUpdate<"task">, "task_status_id" | "task_id">>
+		TablesUpdate<"task"> & Required<Pick<TablesUpdate<"task">, "task_id">>
 	>;
 	status: string;
 }): Promise<FormResponse> => {
 	try {
-		const { error } = await supabase
+		const { data, error } = await supabase
 			.from("task")
 			.update({
 				task_status_id: payload.status,
 			})
-			.eq("task_id", payload.task.task_id);
+			.eq("task_id", payload.task.task_id)
+			.select();
 		if (error) throw error;
+		const [row] = data;
 		return {
 			success: true,
-			message: `Changed Task - ${payload.task.name} status to ${payload.status}`,
+			message: `Changed Task - ${row.name} status to ${row.task_status_id}`,
 		};
 	} catch (error) {
 		return {
