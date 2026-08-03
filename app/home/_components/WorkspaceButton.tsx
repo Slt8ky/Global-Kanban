@@ -171,6 +171,28 @@ export const WorkspaceInviteButton = () => {
 	);
 };
 
+export const WorkspaceManageMemberButton = () => {
+	return (
+		<Dialog>
+			<form>
+				<DialogTrigger
+					render={
+						<Button className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800/20 dark:text-blue-400 dark:hover:bg-blue-800/30 ring ring-blue-600/50 dark:ring-blue-500/50">
+							Manage member
+						</Button>
+					}
+				/>
+				<DialogContent className="sm:max-w-sm">
+					{/* TODO: */}
+					<DialogHeader>
+						<DialogTitle>Manage Member</DialogTitle>
+					</DialogHeader>
+				</DialogContent>
+			</form>
+		</Dialog>
+	);
+};
+
 export const WorkspaceLeaveButton = () => {
 	const user = useAuth();
 	const router = useRouter();
@@ -251,7 +273,7 @@ export const WorkspaceDeleteButton = () => {
 			<AlertDialogTrigger
 				render={
 					<Button className="bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800/20 dark:text-red-400 dark:hover:bg-red-800/30 ring ring-red-600/50 dark:ring-red-500/50">
-						Delete Workspace
+						Delete workspace
 					</Button>
 				}
 			/>

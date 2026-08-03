@@ -48,14 +48,16 @@ import {
 
 const DragableItem = ({
 	id,
+	task,
 	children,
 	className,
 }: {
 	id: string;
+	task: Workspace["workspace"]["task"][number];
 	children: ReactNode;
 	className?: string;
 }) => {
-	const { ref } = useDraggable({ id });
+	const { ref } = useDraggable({ id, data: task });
 	return (
 		<div ref={ref} className={className}>
 			{children}
@@ -84,6 +86,7 @@ export const WorkspaceTasks = () => {
 	const user = useAuth();
 	const { selectedWorkspace } = useWorkspace();
 	const [isLoading, startTransition] = useTransition();
+	const [dragging, setDragging] = useState(false);
 	const handleClick = (
 		task: Workspace["workspace"]["task"][number],
 		status: string,
@@ -141,19 +144,64 @@ export const WorkspaceTasks = () => {
 
 	return (
 		<DragDropProvider
+			onDragStart={() => setDragging(true)}
 			onDragEnd={async (event) => {
+				setDragging(false);
 				const operation = event.operation;
-				if (!operation.source?.id || !operation.target?.id) return;
+				if (
+					!operation.source?.id ||
+					!operation.source?.data ||
+					!operation.target?.id
+				)
+					return;
+				const task = operation.source
+					.data as unknown as Workspace["workspace"]["task"][number];
 				const task_id = operation.source.id as string;
 				const task_status_id = operation.target.id as string;
-				await changeTaskStatus({
-					task: {
-						task_id,
+				if (task.task_status_id === task_status_id) return;
+				await mutate<Workspace[]>(
+					`/api/workspace/${user.user_id}`,
+					async (current) => {
+						if (!current) return [];
+						await changeTaskStatus({
+							task: {
+								task_id,
+							},
+							status: task_status_id,
+						});
+						return current.map((a) => ({
+							...a,
+							workspace: {
+								...a.workspace,
+								task: a.workspace.task.map((b) => {
+									return b.task_id === task_id
+										? { ...b, task_status_id: task_status_id }
+										: b;
+								}),
+							},
+						}));
 					},
-					status: task_status_id,
-				});
-
-				await mutate(`/api/workspace/${user.user_id}`);
+					{
+						optimisticData: (current) => {
+							if (!current) return [];
+							toast.success(
+								`Changed status task ${task.name} from ${task.task_status_id} to ${task_status_id}`,
+							);
+							return current.map((a) => ({
+								...a,
+								workspace: {
+									...a.workspace,
+									task: a.workspace.task.map((b) => {
+										return b.task_id === task_id
+											? { ...b, task_status_id: task_status_id }
+											: b;
+									}),
+								},
+							}));
+						},
+						revalidate: false,
+					},
+				);
 			}}
 		>
 			{items.map((item) => (
@@ -173,9 +221,14 @@ export const WorkspaceTasks = () => {
 						</CardTitle>
 					</CardHeader>
 					<DroppableItem id={item.key} className="h-full">
-						<CardContent className="h-full space-y-5 p-5 flex-1 flex-col overflow-y-scroll">
+						<CardContent
+							className={cn(
+								"h-full space-y-5 p-5 flex-1 flex-col overflow-y-scroll duration-300",
+								dragging && "bg-black/30",
+							)}
+						>
 							{item.value.map((task) => (
-								<DragableItem id={task.task_id} key={task.task_id}>
+								<DragableItem id={task.task_id} task={task} key={task.task_id}>
 									<Card
 										className={cn(
 											"*:duration-300",

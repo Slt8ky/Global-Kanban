@@ -10,6 +10,7 @@ import {
 	WorkspaceDeleteButton,
 	WorkspaceInviteButton,
 	WorkspaceLeaveButton,
+	WorkspaceManageMemberButton,
 } from "./WorkspaceButton";
 
 export const WorkspacePanel = () => {
@@ -105,6 +106,7 @@ export const WorkspacePanel = () => {
 								<Separator orientation="vertical" />
 								<div className="flex h-full gap-3 items-center">
 									<WorkspaceInviteButton />
+									<WorkspaceManageMemberButton />
 									{selectedWorkspace.workspace.user_id === user.user_id ? (
 										<WorkspaceDeleteButton />
 									) : (

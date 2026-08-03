@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleCheckBig, CircleDashed, Plus, X } from "lucide-react";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { mutate } from "swr";
 import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import { toast } from "@/components/toast";
@@ -33,7 +33,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
-import { FormResponse } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { createTask, deleteTask, editTask } from "../action";
 
