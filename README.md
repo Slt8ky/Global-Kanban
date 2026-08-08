@@ -4,7 +4,10 @@
 A real-time collaborative Kanban workspace application built with Next.js and Supabase. Users authenticate via Google OAuth, create or join multi-member workspaces using shareable invite links, and organize tasks across dynamic drag-and-drop boards (`TO DO`, `IN PROGRESS`, `DONE`) synced seamlessly with optimistic updates.
 
 ## 📸 Project Screenshots
-![Project Screenshot](<image.png>)
+![alt text](<public/Screenshot 2026-08-08 120039.png>)
+![alt text](<public/Screenshot 2026-08-08 120044.png>)
+![alt text](<public/Screenshot 2026-08-08 120053.png>)
+![alt text](<public/Screenshot 2026-08-08 120100.png>)
 
 ## 🌐 Live Demo & Deployment
 Experience the live application deployed on Vercel:
@@ -67,8 +70,6 @@ SUPABASE_SECRET_KEY=your_supabase_service_role_key
 
 ### 2. Run Web Dev Mode 💻
 `pnpm dev`  
-
-Open `http://localhost:3000` in your browser.
 
 ### 3. Build for Production 🌐
 `pnpm build`  
