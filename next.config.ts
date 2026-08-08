@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
 		browserToTerminal: true,
 	},
 	reactStrictMode: false,
+	images: {
+		unoptimized: true,
+	},
 };
 
 export default nextConfig;
