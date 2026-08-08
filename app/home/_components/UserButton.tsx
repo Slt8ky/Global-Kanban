@@ -30,7 +30,7 @@ export const UserKickButton = ({
 				const { success, message } = await kickUser({ user_ids, workspace });
 				if (!success) throw new Error(message);
 				toast.success(message);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 				callback();
 			} catch (error) {
 				toast.error(error.message);

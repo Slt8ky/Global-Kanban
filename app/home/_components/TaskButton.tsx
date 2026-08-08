@@ -67,7 +67,7 @@ export const TaskCreateButton = () => {
 				toast.success(message);
 				setError("");
 				setOpen(false);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 			} catch (error) {
 				setError(error.message);
 			}
@@ -210,7 +210,7 @@ export const TaskDeleteButton = ({
 				const { success, message } = await deleteTask(task);
 				if (!success) throw new Error(message);
 				toast.success(message);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 			} catch (error) {
 				toast.error(error.message);
 			}
@@ -275,7 +275,7 @@ export const TaskEditButton = ({
 				if (!success) throw new Error(message);
 				toast.success(message);
 				setError("");
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 			} catch (error) {
 				setError(error.message);
 			}

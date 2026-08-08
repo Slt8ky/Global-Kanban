@@ -72,7 +72,7 @@ export const WorkspaceCreateButton = () => {
 					user_id: user.user_id,
 				});
 				if (!success) throw new Error(message);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 				router.push(`/home?workspace_id=${workspace_id}`);
 				toast.success(message);
 				setOpen(false);
@@ -275,7 +275,7 @@ export const WorkspaceLeaveButton = () => {
 			toast.success(res.message);
 			router.replace("/home");
 			setSelectedWorkspaceId(null);
-			mutate(`/api/workspace/${user.user_id}`);
+			await  mutate(`/api/workspace/${user.user_id}`);
 		} catch {
 			toast.error("An unexpected error occurred.");
 		}
@@ -322,7 +322,7 @@ export const WorkspaceDeleteButton = () => {
 				const { success, message } = await deleteWorkspace(selectedWorkspace);
 				if (!success) throw new Error(message);
 				toast.success(message);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 			} catch (error) {
 				toast.error(error.message);
 			}

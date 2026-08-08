@@ -100,7 +100,7 @@ export const WorkspaceTasks = () => {
 				});
 				if (!success) throw new Error(message);
 				toast.success(message);
-				mutate(`/api/workspace/${user.user_id}`);
+				await mutate(`/api/workspace/${user.user_id}`);
 			} catch (error) {
 				toast.error(error.message);
 			}
