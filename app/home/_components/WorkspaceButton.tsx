@@ -126,8 +126,9 @@ export const WorkspaceInviteButton = () => {
 	}, [copy]);
 	if (!selectedWorkspace) return;
 	const handleCopy = () => {
+		const origin = window.location.origin;
 		navigator.clipboard.writeText(
-			`https://slt8ky.mooo.com/home?invite_id=${selectedWorkspace.workspace.invite_id}`,
+			`https://${origin}/home?invite_id=${selectedWorkspace.workspace.invite_id}`,
 		);
 		toast.success("Copied invite link");
 		setCopy(true);
@@ -154,7 +155,7 @@ export const WorkspaceInviteButton = () => {
 								<InputGroupInput
 									id="input-demo-api-key"
 									type="password"
-									defaultValue={`slt8ky.mooo.com?invite_id=${selectedWorkspace.workspace.invite_id}`}
+									defaultValue={`${window.location.origin}?invite_id=${selectedWorkspace.workspace.invite_id}`}
 									autoComplete="off"
 									readOnly
 								/>

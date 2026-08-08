@@ -8,7 +8,7 @@ export async function login() {
 	).auth.signInWithOAuth({
 		provider: "google",
 		options: {
-			redirectTo: "https://slt8ky.mooo.com/auth/callback",
+			redirectTo: `https://${process.env.DOMAIN}/auth/callback`,
 			queryParams: {
 				access_type: "offline",
 				prompt: "consent",
