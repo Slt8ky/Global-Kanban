@@ -1,7 +1,9 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
 import { Check, Ellipsis, X, Zap } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthProvider";
@@ -13,6 +15,8 @@ import {
 	WorkspaceLeaveButton,
 	WorkspaceManageMemberButton,
 } from "./WorkspaceButton";
+
+gsap.registerPlugin(useGSAP);
 
 export const WorkspacePanel = () => {
 	const user = useAuth();

@@ -84,9 +84,10 @@ const DroppableItem = ({
 
 export const WorkspaceTasks = () => {
 	const user = useAuth();
-	const { selectedWorkspace } = useWorkspace();
+	const { selectedWorkspace, focus } = useWorkspace();
 	const [isLoading, startTransition] = useTransition();
 	const [dragging, setDragging] = useState(false);
+
 	const handleClick = (
 		task: Workspace["workspace"]["task"][number],
 		status: string,
@@ -106,41 +107,42 @@ export const WorkspaceTasks = () => {
 		});
 	};
 
-	const items = useMemo(
-		() =>
-			selectedWorkspace
-				? [
-						{
-							key: "to_do",
-							name: "TO DO",
-							value:
-								Object.groupBy(
-									selectedWorkspace.workspace.task,
-									(item) => item.task_status_id,
-								)?.to_do ?? [],
-						},
-						{
-							key: "in_progress",
-							name: "IN PROGRESS",
-							value:
-								Object.groupBy(
-									selectedWorkspace.workspace.task,
-									(item) => item.task_status_id,
-								)?.in_progress ?? [],
-						},
-						{
-							key: "done",
-							name: "DONE",
-							value:
-								Object.groupBy(
-									selectedWorkspace.workspace.task,
-									(item) => item.task_status_id,
-								)?.done ?? [],
-						},
-					]
-				: [],
-		[selectedWorkspace],
-	);
+	const items = useMemo(() => {
+		if (!selectedWorkspace) return [];
+		const items = Object.groupBy(
+			selectedWorkspace.workspace.task.filter((task) => {
+				if (
+					focus &&
+					!task.task_assign.filter(
+						(task_assign) => task_assign.user_id === user.user_id,
+					).length
+				)
+					return false;
+				return true;
+			}),
+			(item) => item.task_status_id,
+		);
+
+		return selectedWorkspace
+			? [
+					{
+						key: "to_do",
+						name: "TO DO",
+						value: items?.to_do ?? [],
+					},
+					{
+						key: "in_progress",
+						name: "IN PROGRESS",
+						value: items?.in_progress ?? [],
+					},
+					{
+						key: "done",
+						name: "DONE",
+						value: items?.done ?? [],
+					},
+				]
+			: [];
+	}, [focus, selectedWorkspace, user.user_id]);
 
 	return (
 		<DragDropProvider

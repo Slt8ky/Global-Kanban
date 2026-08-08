@@ -6,7 +6,6 @@ import { login } from "../action";
 export const LoginButton = () => {
 	const handleLogin = async () => {
 		const url = await login();
-		console.log(url);
 		window.location.href = url;
 	};
 

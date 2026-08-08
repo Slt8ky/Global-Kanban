@@ -17,6 +17,8 @@ const WorkspaceContext = createContext<{
 	workspaces: Workspace[];
 	selectedWorkspace: Workspace | null;
 	setSelectedWorkspaceId: Dispatch<SetStateAction<string | null>>;
+	focus: boolean;
+	setFocus: Dispatch<SetStateAction<boolean>>;
 	isLoading: boolean;
 } | null>(null);
 
@@ -35,6 +37,7 @@ export const WorkspaceProvider = ({ children }: { children?: ReactNode }) => {
 	const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
 		null,
 	);
+	const [focus, setFocus] = useState(false);
 	const selectedWorkspace = useMemo(() => {
 		return (
 			workspaces.find(
@@ -47,9 +50,11 @@ export const WorkspaceProvider = ({ children }: { children?: ReactNode }) => {
 			workspaces,
 			selectedWorkspace,
 			setSelectedWorkspaceId,
+			focus,
+			setFocus,
 			isLoading,
 		}),
-		[isLoading, selectedWorkspace, workspaces],
+		[focus, isLoading, selectedWorkspace, workspaces],
 	);
 
 	return (

@@ -362,12 +362,15 @@ export const WorkspaceDeleteButton = () => {
 };
 
 export const WorkspaceFocusButton = () => {
-	const [focus, setFocus] = useState(false);
-
+	const { focus, setFocus } = useWorkspace();
+	const handleClick = () => {
+		setFocus((prev) => !prev);
+		toast.success(`Turned ${focus ? "off" : "on"} focus mode`);
+	};
 	return (
 		<Button
 			className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800/20 dark:text-yellow-400 dark:hover:bg-yellow-800/30 ring ring-yellow-600/50 dark:ring-yellow-500/50"
-			onClick={() => setFocus((prev) => !prev)}
+			onClick={handleClick}
 		>
 			{`Turn ${focus ? "off" : "on"} focus mode`}
 		</Button>

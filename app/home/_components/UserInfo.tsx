@@ -3,6 +3,7 @@ import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthProvider";
+import { Logout } from "./Logout";
 
 export const UserInfo = () => {
 	const user = useAuth();
@@ -16,6 +17,7 @@ export const UserInfo = () => {
 					<User />
 				</AvatarFallback>
 			</Avatar>
+			<Logout />
 		</div>
 	);
 };
