@@ -222,10 +222,10 @@ export const WorkspaceTasks = () => {
 							)}
 						</CardTitle>
 					</CardHeader>
-					<DroppableItem id={item.key} className="flex h-full flex-col">
+					<DroppableItem id={item.key} className="min-h-0 h-full flex flex-col">
 						<CardContent
 							className={cn(
-								"min-h-0 space-y-5 py-1 px-1 pr-2 m-2 flex-1 flex-col overflow-y-scroll duration-300 rounded-2xl",
+								"min-h-0 space-y-5 py-1 pl-1 pr-2 m-2 h-full flex-col overflow-y-scroll duration-300 rounded-2xl",
 								dragging && "bg-black/20",
 							)}
 						>
@@ -245,20 +245,12 @@ export const WorkspaceTasks = () => {
 														{(["to_do", "in_progress", "done"] as const).map(
 															(status) =>
 																task.task_status_id !== status && (
-																	<Tooltip key={status}>
-																		<TooltipTrigger
-																			render={
-																				<TaskChangeStatusButton
-																					status={status}
-																					task={task}
-																					onChangeStatus={handleClick}
-																				/>
-																			}
-																		/>
-																		<TooltipContent>
-																			<p>Add to library</p>
-																		</TooltipContent>
-																	</Tooltip>
+																	<TaskChangeStatusButton
+																		key={status}
+																		status={status}
+																		task={task}
+																		onChangeStatus={handleClick}
+																	/>
 																),
 														)}
 													</CardContent>
