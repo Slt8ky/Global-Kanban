@@ -14,6 +14,7 @@
 		"@shadcn/react": "^0.2.1",
 		"@supabase/ssr": "^0.12.3",
 		"@supabase/supabase-js": "^2.110.7",
+		"@tanstack/react-table": "9.0.0-beta.80",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",

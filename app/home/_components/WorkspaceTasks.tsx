@@ -220,11 +220,11 @@ export const WorkspaceTasks = () => {
 							)}
 						</CardTitle>
 					</CardHeader>
-					<DroppableItem id={item.key} className="h-full">
+					<DroppableItem id={item.key} className="flex h-full flex-col">
 						<CardContent
 							className={cn(
-								"h-full space-y-5 p-5 flex-1 flex-col overflow-y-scroll duration-300",
-								dragging && "bg-black/30",
+								"min-h-0 space-y-5 py-1 px-1 pr-2 m-2 flex-1 flex-col overflow-y-scroll duration-300 rounded-2xl",
+								dragging && "bg-black/20",
 							)}
 						>
 							{item.value.map((task) => (

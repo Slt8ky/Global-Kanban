@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
 import {
 	WorkspaceDeleteButton,
+	WorkspaceFocusButton,
 	WorkspaceInviteButton,
 	WorkspaceLeaveButton,
 	WorkspaceManageMemberButton,
@@ -112,6 +113,7 @@ export const WorkspacePanel = () => {
 									) : (
 										<WorkspaceLeaveButton />
 									)}
+									<WorkspaceFocusButton />
 								</div>
 							</div>
 						</CardContent>

@@ -2,9 +2,14 @@
 
 import { Check, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import {
+	useActionState,
+	useEffect,
+	useMemo,
+	useState,
+	useTransition,
+} from "react";
 import { mutate } from "swr";
-import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import { toast } from "@/components/toast";
 import {
 	AlertDialog,
@@ -17,6 +22,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -46,6 +52,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { useWorkspace } from "@/context/WorkspaceProvider";
 import { cn } from "@/lib/utils";
 import { createWorkspace, deleteWorkspace, leaveWorkspace } from "../action";
+import { UserTable } from "./UserTable";
 
 export const WorkspaceCreateButton = () => {
 	const user = useAuth();
@@ -172,23 +179,76 @@ export const WorkspaceInviteButton = () => {
 };
 
 export const WorkspaceManageMemberButton = () => {
+	const user = useAuth();
+	const [open, setOpen] = useState(false);
+	const { selectedWorkspace } = useWorkspace();
+	const data = useMemo(() => {
+		if (!selectedWorkspace) return [];
+		return selectedWorkspace.workspace.workspace_member.map(
+			(workspace_member) => ({
+				user: workspace_member.user,
+				workspace: selectedWorkspace,
+				to_do: selectedWorkspace.workspace.task.reduce(
+					(acc, task) =>
+						task.task_status_id === "to_do"
+							? acc +
+								task.task_assign.reduce(
+									(acc, task_assign) =>
+										task_assign.user_id === user.user_id ? acc + 1 : acc,
+									0,
+								)
+							: acc,
+					0,
+				),
+				in_progress: selectedWorkspace.workspace.task.reduce(
+					(acc, task) =>
+						task.task_status_id === "in_progress"
+							? acc +
+								task.task_assign.reduce(
+									(acc, task_assign) =>
+										task_assign.user_id === user.user_id ? acc + 1 : acc,
+									0,
+								)
+							: acc,
+					0,
+				),
+				done: selectedWorkspace.workspace.task.reduce(
+					(acc, task) =>
+						task.task_status_id === "done"
+							? acc +
+								task.task_assign.reduce(
+									(acc, task_assign) =>
+										task_assign.user_id === user.user_id ? acc + 1 : acc,
+									0,
+								)
+							: acc,
+					0,
+				),
+			}),
+		);
+	}, [selectedWorkspace, user.user_id]);
+	if (!selectedWorkspace) return;
+
 	return (
-		<Dialog>
-			<form>
-				<DialogTrigger
-					render={
-						<Button className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800/20 dark:text-blue-400 dark:hover:bg-blue-800/30 ring ring-blue-600/50 dark:ring-blue-500/50">
-							Manage member
-						</Button>
-					}
-				/>
-				<DialogContent className="sm:max-w-sm">
-					{/* TODO: */}
-					<DialogHeader>
-						<DialogTitle>Manage Member</DialogTitle>
-					</DialogHeader>
-				</DialogContent>
-			</form>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger
+				render={
+					<Button className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800/20 dark:text-blue-400 dark:hover:bg-blue-800/30 ring ring-blue-600/50 dark:ring-blue-500/50">
+						Manage member
+					</Button>
+				}
+			/>
+			<DialogContent className={"max-w-min!"}>
+				<DialogHeader className="gap-4">
+					<DialogTitle className={"flex gap-2 items-center"}>
+						Manage Member
+						<Badge className="font-mono">
+							{selectedWorkspace.workspace.workspace_member.length}
+						</Badge>
+					</DialogTitle>
+					<UserTable data={data} callback={() => setOpen(false)} />
+				</DialogHeader>
+			</DialogContent>
 		</Dialog>
 	);
 };
@@ -298,5 +358,18 @@ export const WorkspaceDeleteButton = () => {
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
+	);
+};
+
+export const WorkspaceFocusButton = () => {
+	const [focus, setFocus] = useState(false);
+
+	return (
+		<Button
+			className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-800/20 dark:text-yellow-400 dark:hover:bg-yellow-800/30 ring ring-yellow-600/50 dark:ring-yellow-500/50"
+			onClick={() => setFocus((prev) => !prev)}
+		>
+			{`Turn ${focus ? "off" : "on"} focus mode`}
+		</Button>
 	);
 };

@@ -233,3 +233,26 @@ export const editTask = async (payload: {
 		};
 	}
 };
+
+export const kickUser = async (payload: {
+	user_ids: Tables<"user">["user_id"][];
+	workspace: Workspace;
+}): Promise<FormResponse> => {
+	try {
+		const { error } = await supabase
+			.from("workspace_member")
+			.delete()
+			.eq("workspace_id", payload.workspace.workspace_id)
+			.or(`user_id.in.(${payload.user_ids.join(",")})`);
+		if (error) throw error;
+		return {
+			success: true,
+			message: `Kicked ${payload.user_ids.length} member(s) successfully`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: error.message,
+		};
+	}
+};
