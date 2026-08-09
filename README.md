@@ -48,15 +48,6 @@ Experience the live application deployed on Vercel:
 - Constructing relational Supabase query builders for complex nested task assignments and workspace member relationships.
 - Managing deep link routing parameters (`invite_id` and `workspace_id`) via Next.js client-side search parameter listeners.
 
-## 🚧 Existing Issues & Improvements Plan
-### Current gaps ❌
-- Board update triggers rely primarily on SWR revalidation instead of full real-time WebSockets subscriptions.
-- Member permissions are currently limited to Owner and Member without custom granular roles.
-
-### Future improvements 🚀
-- Integrate **Supabase Realtime channels** to stream live board updates across active connected client sessions.
-- Add sub-tasks, task labels, and due date reminders for enhanced task tracking.
-
 ## ⚙️ Project Startup Guide
 ### 1. Environment setup
 `pnpm i`  
