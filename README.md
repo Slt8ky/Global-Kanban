@@ -68,7 +68,3 @@ SUPABASE_SECRET_KEY=your_supabase_service_role_key
 
 > [!TIP]
 > Use the **Focus Mode** button in the workspace toolbar to filter out tasks that are not assigned to you 🎯
-
-> [!NOTE]
-> To reset authentication state or clear broken session state:
-> - Clear browser cookies & local storage for the site and reload the page.
