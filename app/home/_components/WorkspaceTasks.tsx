@@ -84,7 +84,7 @@ const DroppableItem = ({
 
 export const WorkspaceTasks = () => {
 	const user = useAuth();
-	const { selectedWorkspace, focus } = useWorkspace();
+	const { selectedWorkspace, focus, channels } = useWorkspace();
 	const [isLoading, startTransition] = useTransition();
 	const [dragging, setDragging] = useState(false);
 
@@ -101,6 +101,12 @@ export const WorkspaceTasks = () => {
 				if (!success) throw new Error(message);
 				toast.success(message);
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (selectedWorkspace) {
+					channels[selectedWorkspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 			} catch (error) {
 				toast.error(error.message);
 			}
@@ -171,6 +177,12 @@ export const WorkspaceTasks = () => {
 							},
 							status: task_status_id,
 						});
+						if (selectedWorkspace) {
+							channels[selectedWorkspace.workspace_id].send({
+								event: "workspace",
+								type: "broadcast",
+							});
+						}
 						return current.map((a) => ({
 							...a,
 							workspace: {

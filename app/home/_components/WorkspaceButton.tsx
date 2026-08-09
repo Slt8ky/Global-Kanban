@@ -126,9 +126,8 @@ export const WorkspaceInviteButton = () => {
 	}, [copy]);
 	if (!selectedWorkspace) return;
 	const handleCopy = () => {
-		const origin = window.location.origin;
 		navigator.clipboard.writeText(
-			`https://${origin}/home?invite_id=${selectedWorkspace.workspace.invite_id}`,
+			`${window.location.origin}/home?invite_id=${selectedWorkspace.workspace.invite_id}`,
 		);
 		toast.success("Copied invite link");
 		setCopy(true);
@@ -257,7 +256,8 @@ export const WorkspaceManageMemberButton = () => {
 export const WorkspaceLeaveButton = () => {
 	const user = useAuth();
 	const router = useRouter();
-	const { selectedWorkspace, setSelectedWorkspaceId } = useWorkspace();
+	const { selectedWorkspace, setSelectedWorkspaceId, channels } =
+		useWorkspace();
 	const [open, setOpen] = useState(false);
 	if (!selectedWorkspace) return;
 	const handleClick = async () => {
@@ -275,7 +275,13 @@ export const WorkspaceLeaveButton = () => {
 			toast.success(res.message);
 			router.replace("/home");
 			setSelectedWorkspaceId(null);
-			await  mutate(`/api/workspace/${user.user_id}`);
+			await mutate(`/api/workspace/${user.user_id}`);
+			if (selectedWorkspace) {
+				channels[selectedWorkspace.workspace_id].send({
+					event: "workspace",
+					type: "broadcast",
+				});
+			}
 		} catch {
 			toast.error("An unexpected error occurred.");
 		}
@@ -312,17 +318,25 @@ export const WorkspaceDeleteButton = () => {
 	const user = useAuth();
 	const [open, setOpen] = useState(false);
 	const [isLoading, startTransition] = useTransition();
-	const { selectedWorkspace, setSelectedWorkspaceId } = useWorkspace();
+	const { selectedWorkspace, setSelectedWorkspaceId, channels } =
+		useWorkspace();
 	if (!selectedWorkspace) return null;
 	const handleClick = () => {
 		startTransition(async () => {
 			try {
 				setOpen(false);
 				setSelectedWorkspaceId(null);
-				const { success, message } = await deleteWorkspace(selectedWorkspace);
+				const workspace = selectedWorkspace;
+				const { success, message } = await deleteWorkspace(workspace);
 				if (!success) throw new Error(message);
 				toast.success(message);
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (workspace) {
+					channels[workspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 			} catch (error) {
 				toast.error(error.message);
 			}

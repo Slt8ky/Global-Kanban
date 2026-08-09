@@ -18,7 +18,7 @@ const Page = () => {
 		<AuthProvider>
 			<WorkspaceProvider>
 				<SearchParamHandler />
-				<div className="flex w-full h-dvh flex-col p-30">
+				<div className="flex w-full h-dvh flex-col p-30 max-2xl:p-15 max-lg:p-0">
 					<Card className="flex-1">
 						<CardHeader>
 							<CardTitle>

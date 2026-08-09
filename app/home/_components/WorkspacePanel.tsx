@@ -82,7 +82,7 @@ export const WorkspacePanel = () => {
 								/>
 							</div>
 							<div className="flex gap-3">
-								<div className="flex flex-col">
+								<div className="flex flex-col justify-center">
 									<span className="text-emerald-600 font-bold">
 										Workspace Name
 									</span>
@@ -91,7 +91,7 @@ export const WorkspacePanel = () => {
 									</span>
 								</div>
 								<Separator orientation="vertical" />
-								<div className="flex flex-col ">
+								<div className="flex flex-col justify-center">
 									<span className="text-emerald-600 font-bold">
 										Workspace ID
 									</span>
@@ -100,7 +100,7 @@ export const WorkspacePanel = () => {
 									</span>
 								</div>
 								<Separator orientation="vertical" />
-								<div className="flex flex-col ">
+								<div className="flex flex-col justify-center">
 									<span className="text-emerald-600 font-bold">
 										Workspace Member
 									</span>
@@ -108,8 +108,16 @@ export const WorkspacePanel = () => {
 										{selectedWorkspace.workspace.workspace_member.length}
 									</span>
 								</div>
-								<Separator orientation="vertical" />
-								<div className="flex h-full gap-3 items-center">
+							</div>
+						</CardContent>
+					</Card>
+					<Card>
+						<CardContent
+							className="grid w-fit h-full gap-x-3"
+							style={{ gridTemplateColumns: "auto 1fr" }}
+						>
+							<div className="flex gap-3">
+								<div className="flex h-full gap-3 items-center flex-wrap">
 									<WorkspaceInviteButton />
 									<WorkspaceManageMemberButton />
 									{selectedWorkspace.workspace.user_id === user.user_id ? (
@@ -122,20 +130,6 @@ export const WorkspacePanel = () => {
 							</div>
 						</CardContent>
 					</Card>
-					{items.map((item) => (
-						<Card key={item.name}>
-							<CardContent
-								className="grid w-fit h-full gap-x-3 grid-rows-2"
-								style={{ gridTemplateColumns: "auto 1fr" }}
-							>
-								<div className="my-auto row-span-2">{item.icon}</div>
-								<span className="text-emerald-600 font-bold">{item.name}</span>
-								<span className="text-muted-foreground font-mono">
-									{item.value}
-								</span>
-							</CardContent>
-						</Card>
-					))}
 				</CardContent>
 			</Card>
 		)

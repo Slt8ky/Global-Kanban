@@ -38,7 +38,7 @@ import { createTask, deleteTask, editTask } from "../action";
 
 export const TaskCreateButton = () => {
 	const user = useAuth();
-	const { selectedWorkspace } = useWorkspace();
+	const { selectedWorkspace, channels } = useWorkspace();
 	const anchor = useComboboxAnchor();
 	const [isPending, startTransition] = useTransition();
 	const [open, setOpen] = useState(false);
@@ -68,6 +68,12 @@ export const TaskCreateButton = () => {
 				setError("");
 				setOpen(false);
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (selectedWorkspace) {
+					channels[selectedWorkspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 			} catch (error) {
 				setError(error.message);
 			}
@@ -202,6 +208,7 @@ export const TaskDeleteButton = ({
 	task: Workspace["workspace"]["task"][number];
 }) => {
 	const user = useAuth();
+	const { selectedWorkspace, channels } = useWorkspace();
 	const [isLoading, startTransition] = useTransition();
 
 	const handleClick = () => {
@@ -211,6 +218,12 @@ export const TaskDeleteButton = ({
 				if (!success) throw new Error(message);
 				toast.success(message);
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (selectedWorkspace) {
+					channels[selectedWorkspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 			} catch (error) {
 				toast.error(error.message);
 			}
@@ -236,7 +249,7 @@ export const TaskEditButton = ({
 	task: Workspace["workspace"]["task"][number];
 }) => {
 	const user = useAuth();
-	const { selectedWorkspace } = useWorkspace();
+	const { selectedWorkspace, channels } = useWorkspace();
 	const anchor = useComboboxAnchor();
 	const [isPending, startTransition] = useTransition();
 	const [open, setOpen] = useState(false);
@@ -276,6 +289,12 @@ export const TaskEditButton = ({
 				toast.success(message);
 				setError("");
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (selectedWorkspace) {
+					channels[selectedWorkspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 			} catch (error) {
 				setError(error.message);
 			}

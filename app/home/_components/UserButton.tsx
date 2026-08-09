@@ -6,6 +6,7 @@ import type { Workspace } from "@/app/api/workspace/[user_id]/route";
 import { toast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthProvider";
+import { useWorkspace } from "@/context/WorkspaceProvider";
 import type { Tables } from "@/database.types";
 import { cn } from "@/lib/utils";
 import { kickUser } from "../action";
@@ -22,6 +23,7 @@ export const UserKickButton = ({
 	callback: () => void;
 } & ComponentPropsWithoutRef<"button">) => {
 	const user = useAuth();
+	const { selectedWorkspace, channels } = useWorkspace();
 	const [isLoading, startTransition] = useTransition();
 
 	const handleClick = () => {
@@ -31,6 +33,12 @@ export const UserKickButton = ({
 				if (!success) throw new Error(message);
 				toast.success(message);
 				await mutate(`/api/workspace/${user.user_id}`);
+				if (selectedWorkspace) {
+					channels[selectedWorkspace.workspace_id].send({
+						event: "workspace",
+						type: "broadcast",
+					});
+				}
 				callback();
 			} catch (error) {
 				toast.error(error.message);
